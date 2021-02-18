@@ -1,0 +1,22 @@
+{
+  "death.attack.blackhole.0": "%1$s is no longer with us, Skipper",
+  "death.attack.blackhole.1": "%1$s was sent to Brazil",
+  "death.attack.blackhole.2": "%1$s is no more",
+  "death.attack.blackhole.3": "%1$s was the Impostor",
+  "death.attack.blackhole.4": "%1$s was not the Impostor",
+  "death.attack.blackhole.5": "%1$s was ejected",
+  "death.attack.blackhole.6": "%1$s went into electrical alone",
+  "death.attack.blackhole.7": "%1$s faked a task",
+  "entity.blackhole.blackhole": "Black hole",
+  "text.tautoconfig.blackhole.title": "Black Hole",
+  "text.autoconfig.blackhole.option.limit": "Size limit",
+  "text.autoconfig.blackhole.option.follow": "Follow",
+  "text.autoconfig.blackhole.option.grow": "Grow",
+  "text.autoconfig.blackhole.option.pull": "Pull",
+  "text.autoconfig.blackhole.option.destroy": "Destroy",
+  "text.autoconfig.blackhole.option.damage": "Damage",
+  "text.autoconfig.blackhole.option.followSpeed": "Follow speed",
+  "text.autoconfig.blackhole.option.growthSpeed": "Growth speed",
+  "text.autoconfig.blackhole.option.pullSpeed": "Pull strength",
+  "text.autoconfig.blackhole.option.damageStrength": "Damage strength"
+}
