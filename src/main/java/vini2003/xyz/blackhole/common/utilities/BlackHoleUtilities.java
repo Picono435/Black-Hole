@@ -153,7 +153,7 @@ public class BlackHoleUtilities {
 													(0 < x ? (absoluteSectionX - x) * (absoluteSectionX - x) : (x - absoluteSectionX) * (x - absoluteSectionX))
 															+ (0 < y ? (absoluteSectionY - y) * (absoluteSectionY - y) : (y - absoluteSectionY) * (y - absoluteSectionY))
 															+ (0 < z ? (absoluteSectionZ - z) * (absoluteSectionZ - z) : (z - absoluteSectionZ) * (z - absoluteSectionZ)) <= clearRadius * clearRadius) {
-												if (!section.getBlockState(sectionX, sectionY, sectionZ).isAir() && section.getBlockState(sectionX, sectionY, sectionZ).getBlock() != Blocks.BEDROCK) {
+												if (!section.getBlockState(sectionX, sectionY, sectionZ).isAir()) {
 													section.setBlockState(sectionX, sectionY, sectionZ, AIR);
 													shouldUpdate = true;
 												}

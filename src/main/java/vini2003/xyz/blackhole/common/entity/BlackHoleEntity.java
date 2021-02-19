@@ -93,32 +93,12 @@ public class BlackHoleEntity extends Entity {
 			}
 		}
 		
-		// Move entities; damage them and players.
+		// Move entities.
 		if (!world.isClient) {
 			for (Entity entity : ((ServerWorld) world).iterateEntities()) {
 				if (entity.getType() == BlackHoleEntityTypes.BLACK_HOLE) continue;
 				
 				double distance = getPos().distanceTo(entity.getPos());
-				
-				if (BlackHoleConfig.cache.damage) {
-					double damage = (BlackHoleConfig.cache.damageStrength / sqrt(distance));
-					
-					// If is not living and is within size, kill.
-					if (distance < size) {
-						if (!(entity instanceof LivingEntity)) {
-							entity.kill();
-							
-							continue;
-						}
-						
-						damage = Integer.MAX_VALUE;
-					}
-					
-					// Otherwise, damage.
-					if (damage >= 1D) {
-						entity.damage(BlackHoleDamageSources.BLACK_HOLE, (float) damage);
-					}
-				}
 				
 				if (BlackHoleConfig.cache.pull) {
 					if (!(entity instanceof PlayerEntity)) {
