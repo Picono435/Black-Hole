@@ -9,8 +9,6 @@ import net.minecraft.client.render.model.json.ModelTransformation;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
 import org.spongepowered.asm.mixin.Final;
@@ -36,11 +34,21 @@ public class WorldRendererMixin {
 	
 	private BakedModel blackhole_model;
 	
+	private long lastFrameNanoTime = -1;
+	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BufferBuilderStorage;getEntityVertexConsumers()Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;"), method = "render")
-	void blackhole_render(MatrixStack matrices, float tickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
+	void blackhole_render(MatrixStack matrices, float uselessTickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
 		if (blackhole_model == null) {
 			blackhole_model = Myron.getModel(BlackHole.identifier("models/misc/black_sphere"));
 		}
+		
+		if (lastFrameNanoTime == -1) {
+			lastFrameNanoTime = System.nanoTime();
+		}
+		
+		float tickDelta = (System.nanoTime() - lastFrameNanoTime) / 16_000_000F;
+		
+		lastFrameNanoTime = System.nanoTime();
 		
 		BlackHoleWorldComponent blackHoleWorldComponent = BlackHoleComponents.BLACK_HOLES.get(world);
 		
