@@ -21,6 +21,9 @@
     ],
     "modmenu": [
       "vini2003.xyz.blackhole.client.modmenu.BlackHoleModMenu"
+    ],
+    "cardinal-components": [
+      "vini2003.xyz.blackhole.common.BlackHoleComponents"
     ]
   },
   "mixins": [
@@ -32,5 +35,10 @@
     "minecraft": "1.16.5",
     "myron": ">=1.5.0",
     "cloth-config2": ">=4.10.9"
+  },
+  "custom": {
+    "cardinal-components": [
+      "blackhole:black_holes"
+    ]
   }
 }

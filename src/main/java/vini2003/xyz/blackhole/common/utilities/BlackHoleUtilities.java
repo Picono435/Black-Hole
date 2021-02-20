@@ -38,7 +38,7 @@ import net.minecraft.world.World;
 import net.minecraft.world.chunk.ChunkSection;
 import net.minecraft.world.chunk.WorldChunk;
 import vini2003.xyz.blackhole.client.utilities.BlackHoleClientUtilities;
-import vini2003.xyz.blackhole.common.entity.BlackHoleEntity;
+import vini2003.xyz.blackhole.common.components.BlackHoleComponent;
 
 import java.util.List;
 
@@ -49,7 +49,7 @@ public class BlackHoleUtilities {
 		return ((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)) < distance * distance;
 	}
 	
-	public static void destroy(BlackHoleEntity entity, World world, int x, int y, int z, int radius) {
+	public static void destroy(BlackHoleComponent blackHole, World world, int x, int y, int z, int radius) {
 		int clearRadius = (int) (radius * 1.5F);
 		
 		int pickupRadius = (int) (radius * 2.5F);
@@ -79,8 +79,8 @@ public class BlackHoleUtilities {
 							
 							// The player is within distance.
 							// Add the removed block to the entity.
-							if (((List) entity.getParticles()).size() < 2048 && isWithinDistance(topPosition.getX(), (int) player.getX(), topPosition.getZ(), (int) player.getZ(), 64)) {
-								entity.addParticle(new BlackHoleEntity.Particle(new Vec3d(topPosition.getX(), topPosition.getY(), topPosition.getZ()), state));
+							if (((List) blackHole.getParticles()).size() < 2048 && isWithinDistance(topPosition.getX(), (int) player.getX(), topPosition.getZ(), (int) player.getZ(), 64)) {
+								blackHole.getParticles().add(new BlackHoleComponent.BlackHoleParticle(new Vec3d(topPosition.getX(), topPosition.getY(), topPosition.getZ()), state));
 							}
 						} else {
 							// Remove the block.

@@ -5,43 +5,68 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import io.netty.buffer.Unpooled;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
+import vini2003.xyz.blackhole.common.components.BlackHoleComponent;
 import vini2003.xyz.blackhole.common.config.BlackHoleConfig;
-import vini2003.xyz.blackhole.common.entity.BlackHoleEntity;
+import vini2003.xyz.blackhole.registry.client.BlackHoleNetworking;
 
 public class BlackHoleCommands {
 	private static int spawnBlackHole(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		BlockPos blockPos = context.getSource().getPlayer().getBlockPos();
+		Vec3d pos = context.getSource().getPlayer().getPos();
 		
 		World world = context.getSource().getWorld();
 		
-		BlackHoleEntity blackHoleEntity = new BlackHoleEntity(BlackHoleEntityTypes.BLACK_HOLE, world);
-		blackHoleEntity.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
-		blackHoleEntity.requestTeleport(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+		BlackHoleComponent blackHole = new BlackHoleComponent(world);
+		blackHole.setPos(pos);
+		blackHole.setSize(1F);
 		
-		world.spawnEntity(blackHoleEntity);
+		BlackHoleComponents.BLACK_HOLES.get(world).getBlackHoles().add(blackHole);
 		
 		return 1;
 	}
 	
 	private static int growSpeed(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		BlackHoleConfig.cache.growthSpeed = IntegerArgumentType.getInteger(context, "growSpeed") * BlackHoleConfig.defaultGrow;
+		float growSpeed = IntegerArgumentType.getInteger(context, "growSpeed") * BlackHoleConfig.defaultGrow;
+		
+		BlackHoleConfig.cache.growSpeed = growSpeed;
+		
+		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+		buf.writeFloat(growSpeed);
+		
+		ServerPlayNetworking.send(context.getSource().getPlayer(), BlackHoleNetworking.GROW_SPEED_PACKET, buf);
 		
 		return 1;
 	}
 	
 	private static int pullSpeed(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		BlackHoleConfig.cache.pullSpeed = IntegerArgumentType.getInteger(context, "pullSpeed") * BlackHoleConfig.defaultPull;
+		float pullSpeed = IntegerArgumentType.getInteger(context, "pullSpeed") * BlackHoleConfig.defaultGrow;
+		
+		BlackHoleConfig.cache.pullSpeed = pullSpeed;
+		
+		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+		buf.writeFloat(pullSpeed);
+		
+		ServerPlayNetworking.send(context.getSource().getPlayer(), BlackHoleNetworking.PULL_SPEED_PACKET, buf);
 		
 		return 1;
 	}
 	
 	private static int followSpeed(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		BlackHoleConfig.cache.followSpeed = IntegerArgumentType.getInteger(context, "followSpeed") * BlackHoleConfig.defaultFollow;
+		float followSpeed = IntegerArgumentType.getInteger(context, "followSpeed") * BlackHoleConfig.defaultGrow;
+		
+		BlackHoleConfig.cache.followSpeed = followSpeed;
+		
+		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
+		buf.writeFloat(followSpeed);
+		
+		ServerPlayNetworking.send(context.getSource().getPlayer(), BlackHoleNetworking.FOLLOW_SPEED_PACKET, buf);
 		
 		return 1;
 	}
@@ -51,6 +76,8 @@ public class BlackHoleCommands {
 		BlackHoleConfig.cache.pull = false;
 		BlackHoleConfig.cache.grow = false;
 		
+		ServerPlayNetworking.send(context.getSource().getPlayer(), BlackHoleNetworking.PAUSE_PACKET, new PacketByteBuf(Unpooled.buffer()));
+		
 		return 1;
 	}
 	
@@ -58,6 +85,8 @@ public class BlackHoleCommands {
 		BlackHoleConfig.cache.follow = true;
 		BlackHoleConfig.cache.pull = true;
 		BlackHoleConfig.cache.grow = true;
+		
+		ServerPlayNetworking.send(context.getSource().getPlayer(), BlackHoleNetworking.RESUME_PACKET, new PacketByteBuf(Unpooled.buffer()));
 		
 		return 1;
 	}
@@ -108,6 +137,11 @@ public class BlackHoleCommands {
 			
 			
 			blackHoleRoot.addChild(blackHoleSpawn);
+			blackHoleRoot.addChild(blackHolePull);
+			blackHoleRoot.addChild(blackHoleGrow);
+			blackHoleRoot.addChild(blackHoleFollow);
+			blackHoleRoot.addChild(blackHolePause);
+			blackHoleRoot.addChild(blackHoleResume);
 			
 			dispatcher.getRoot().addChild(blackHoleRoot);
 		});

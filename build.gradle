@@ -50,6 +50,9 @@ dependencies {
     modApi("me.shedaniel.cloth:cloth-config:${project.cloth_config_version}:fabric") {
         exclude(group: "net.fabricmc.fabric-api")
     }
+
+    // Cardinal Components API
+    modImplementation "com.github.OnyxStudios.Cardinal-Components-API:Cardinal-Components-API:${project.cardinal_components_api_version}"
 }
 
 processResources {

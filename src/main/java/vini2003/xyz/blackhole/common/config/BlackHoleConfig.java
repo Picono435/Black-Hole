@@ -20,23 +20,23 @@ public class BlackHoleConfig implements ConfigData {
 	public int limit = 64;
 	
 	@ConfigEntry.Gui.Excluded
-	public static final double defaultFollow = 0.00125D;
+	public static final float defaultFollow = 0.00125F;
 	
 	public boolean follow = true;
 	
-	public double followSpeed = 0.00125D;
+	public float followSpeed = 0.00125F;
 	
 	@ConfigEntry.Gui.Excluded
-	public static final double defaultGrow = 0.00003851D;
+	public static final float defaultGrow = 0.00003851F;
 	
 	public boolean grow = true;
 	
-	public double growthSpeed = 0.00003851D;
+	public float growSpeed = 0.00003851F;
 	
 	@ConfigEntry.Gui.Excluded
-	public static final double defaultPull = 0.5D;
+	public static final float defaultPull = 0.5F;
 	
 	public boolean pull = true;
 	
-	public double pullSpeed = 0.5D;
+	public float pullSpeed = 0.5F;
 }

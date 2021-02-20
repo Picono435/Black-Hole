@@ -6,7 +6,8 @@
   "mixins": [
   ],
   "client": [
-    "client.InGameHudMixin"
+    "client.InGameHudMixin",
+    "client.WorldRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
