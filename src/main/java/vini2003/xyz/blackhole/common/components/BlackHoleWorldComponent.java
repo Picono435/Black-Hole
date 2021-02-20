@@ -9,11 +9,14 @@ import vini2003.xyz.blackhole.registry.common.BlackHoleComponents;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class BlackHoleWorldComponent implements AutoSyncedComponent {
 	private final List<BlackHoleComponent> blackHoles = new ArrayList<>();
 	
 	private final World world;
+	
+	private int lastId = 0;
 	
 	public BlackHoleWorldComponent(World world) {
 		this.world = world;
@@ -27,17 +30,28 @@ public class BlackHoleWorldComponent implements AutoSyncedComponent {
 	
 	@Override
 	public void readFromNbt(CompoundTag compoundTag) {
-		blackHoles.clear();
-		
 		ListTag list = compoundTag.getList("BlackHoles", 10);
 		
 		list.forEach(blackHoleCompoundTag -> {
-			BlackHoleComponent blackHoleComponent = new BlackHoleComponent(world);
+			int id = ((CompoundTag) blackHoleCompoundTag).getInt("Id");
 			
-			blackHoleComponent.readFromNbt((CompoundTag) blackHoleCompoundTag);
+			Optional<BlackHoleComponent> blackHole = blackHoles
+					.stream()
+					.filter(existingBlackHole -> existingBlackHole.getId() == id)
+					.findFirst();
 			
-			blackHoles.add(blackHoleComponent);
+			if (blackHole.isPresent()) {
+				blackHole.get().readFromNbt((CompoundTag) blackHoleCompoundTag);
+			} else {
+				BlackHoleComponent blackHoleComponent = new BlackHoleComponent(world);
+				
+				blackHoleComponent.readFromNbt((CompoundTag) blackHoleCompoundTag);
+				
+				blackHoles.add(blackHoleComponent);
+			}
 		});
+		
+		lastId = compoundTag.getInt("LastId");
 	}
 	
 	@Override
@@ -53,6 +67,14 @@ public class BlackHoleWorldComponent implements AutoSyncedComponent {
 		});
 		
 		compoundTag.put("BlackHoles", list);
+		
+		compoundTag.putInt("LastId", lastId);
+	}
+	
+	public int nextId() {
+		int id = lastId;
+		++lastId;
+		return id;
 	}
 	
 	// Getters and Setters //

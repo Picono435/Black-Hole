@@ -99,12 +99,10 @@ public class WorldRendererMixin {
 				
 				matrices.translate(particle.getPos().getX() - camera.getPos().getX(), particle.getPos().getY() - camera.getPos().getY(), particle.getPos().getZ() - camera.getPos().getZ());
 				
-				itemRenderer.renderItem(particle.getStack(), ModelTransformation.Mode.NONE, world.getLightLevel(new BlockPos(particle.getPos().getX(), particle.getPos().getY(), particle.getPos().getZ())), OverlayTexture.DEFAULT_UV, matrices, bufferBuilders.getEntityVertexConsumers());
+				itemRenderer.renderItem(particle.getStack(), ModelTransformation.Mode.NONE, 15728880, OverlayTexture.DEFAULT_UV, matrices, bufferBuilders.getEntityVertexConsumers());
 				
 				matrices.pop();
 			}
 		});
-		
-		bufferBuilders.getEntityVertexConsumers().draw();
 	}
 }

@@ -11,6 +11,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import vini2003.xyz.blackhole.common.config.BlackHoleConfig;
 import vini2003.xyz.blackhole.common.utilities.BlackHoleUtilities;
+import vini2003.xyz.blackhole.registry.common.BlackHoleComponents;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +23,8 @@ public class BlackHoleComponent implements Component {
 	
 	private int countdownToDamage = 1200;
 	
+	private int id;
+	
 	private World world;
 	
 	private PlayerEntity target;
@@ -30,6 +33,8 @@ public class BlackHoleComponent implements Component {
 	
 	public BlackHoleComponent(World world) {
 		this.world = world;
+		
+		this.id = BlackHoleComponents.BLACK_HOLES.get(world).nextId();
 	}
 	
 	public void tickSize() {
@@ -43,21 +48,25 @@ public class BlackHoleComponent implements Component {
 	}
 	
 	public void tickPlayerPull() {
-		if (world.isClient) {
-			for (Entity entity : world.getPlayers()) {
-				if (!entity.isSpectator() && !((PlayerEntity) entity).isCreative()) {
-					double distance = getPos().distanceTo(entity.getPos());
-					
+		for (Entity entity : world.getPlayers()) {
+			if (!entity.isSpectator() && !((PlayerEntity) entity).isCreative()) {
+				double distance = getPos().distanceTo(entity.getPos());
+				
+				if (world.isClient) {
 					Vec3d pull = getPos().subtract(entity.getPos()).normalize();
 					pull = pull.multiply(BlackHoleConfig.cache.pullSpeed / (distance - size));
 					
 					// If velocity is lower than 1 in each axis, proceed.
-					if (entity.getVelocity().lengthSquared() < 3) {
-						entity.addVelocity(pull.getX(), pull.getY(), pull.getZ());
+					if (distance > size && entity.getVelocity().lengthSquared() < 3) {
+						entity.addVelocity(Math.min(1F - entity.getVelocity().getX(), pull.getX()), Math.min(1F - entity.getVelocity().getY(), pull.getY()), Math.min(1F - entity.getVelocity().getZ(), pull.getZ()));
 						entity.velocityModified = true;
 						entity.velocityDirty = true;
 					}
 					
+					if (distance < size) {
+						entity.setVelocity(Vec3d.ZERO);
+					}
+				} else {
 					if (countdownToDamage <= 0 && distance < size) {
 						entity.kill();
 					}
@@ -77,14 +86,15 @@ public class BlackHoleComponent implements Component {
 						pull = pull.multiply(BlackHoleConfig.cache.pullSpeed / (distance - size));
 						
 						// If velocity is lower than 1 in each axis, proceed.
-						if (entity.getVelocity().lengthSquared() < 3) {
-							entity.addVelocity(pull.getX(), pull.getY(), pull.getZ());
+						if (distance > size && entity.getVelocity().lengthSquared() < 3) {
+							entity.addVelocity(Math.min(1F - entity.getVelocity().getX(), pull.getX()), Math.min(1F - entity.getVelocity().getY(), pull.getY()), Math.min(1F - entity.getVelocity().getZ(), pull.getZ()));
 							entity.velocityModified = true;
 							entity.velocityDirty = true;
 						}
 						
 						if (countdownToDamage <= 0 && distance < size) {
 							entity.kill();
+							entity.setVelocity(Vec3d.ZERO);
 						}
 					}
 				}
@@ -118,9 +128,7 @@ public class BlackHoleComponent implements Component {
 		
 		tickDestruction();
 		
-		if (world.isClient) {
-			tickPlayerPull();
-		}
+		tickPlayerPull();
 		
 		if (!world.isClient) {
 			tickEntityPull();
@@ -150,6 +158,14 @@ public class BlackHoleComponent implements Component {
 	
 	public void setSize(float size) {
 		this.size = size;
+	}
+	
+	public int getId() {
+		return id;
+	}
+	
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	public World getWorld() {
@@ -206,6 +222,10 @@ public class BlackHoleComponent implements Component {
 		);
 		
 		size = compoundTag.getFloat("Size");
+		
+		countdownToDamage = compoundTag.getInt("CountdownToDamage");
+		
+		id = compoundTag.getInt("Id");
 	}
 	
 	@Override
@@ -215,5 +235,9 @@ public class BlackHoleComponent implements Component {
 		compoundTag.putDouble("Z", pos.getZ());
 		
 		compoundTag.putFloat("Size", size);
+		
+		compoundTag.putInt("CountdownToDamage", countdownToDamage);
+		
+		compoundTag.putInt("Id", id);
 	}
 }
