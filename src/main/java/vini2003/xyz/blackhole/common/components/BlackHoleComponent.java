@@ -52,23 +52,25 @@ public class BlackHoleComponent implements Component {
 			if (!entity.isSpectator() && !((PlayerEntity) entity).isCreative()) {
 				double distance = getPos().distanceTo(entity.getPos());
 				
-				if (world.isClient) {
-					Vec3d pull = getPos().subtract(entity.getPos()).normalize();
-					pull = pull.multiply(Math.pow(BlackHoleConfig.cache.pullSpeed, (distance * 1.5F) / (size * 2.5F)));
-					
-					// If velocity is lower than 1 in each axis, proceed.
-					if (distance > size && entity.getVelocity().lengthSquared() < 3) {
-						entity.addVelocity(Math.min(1F - entity.getVelocity().getX(), pull.getX()), Math.min(1F - entity.getVelocity().getY(), pull.getY()), Math.min(1F - entity.getVelocity().getZ(), pull.getZ()));
-						entity.velocityModified = true;
-						entity.velocityDirty = true;
-					}
-					
-					if (distance < size) {
-						entity.setVelocity(Vec3d.ZERO);
-					}
-				} else {
-					if (countdown <= 0 && distance < size) {
-						entity.kill();
+				if (BlackHoleConfig.cache.pull) {
+					if (world.isClient) {
+						Vec3d pull = getPos().subtract(entity.getPos()).normalize();
+						pull = pull.multiply(Math.pow(BlackHoleConfig.cache.pullSpeed, (distance * 1.5F) / (size * 2.5F)));
+						
+						// If velocity is lower than 1 in each axis, proceed.
+						if (distance > size && entity.getVelocity().lengthSquared() < 3) {
+							entity.addVelocity(Math.min(1F - entity.getVelocity().getX(), pull.getX()), Math.min(1F - entity.getVelocity().getY(), pull.getY()), Math.min(1F - entity.getVelocity().getZ(), pull.getZ()));
+							entity.velocityModified = true;
+							entity.velocityDirty = true;
+						}
+						
+						if (distance < size) {
+							entity.setVelocity(Vec3d.ZERO);
+						}
+					} else {
+						if (countdown <= 0 && distance < size) {
+							entity.kill();
+						}
 					}
 				}
 			}
