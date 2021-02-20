@@ -7,6 +7,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import vini2003.xyz.blackhole.common.config.BlackHoleConfig;
@@ -21,7 +22,7 @@ public class BlackHoleComponent implements Component {
 	
 	private float size = 1F;
 	
-	private int countdown = 1200;
+	private int countdown = 100;
 	
 	private int id;
 	
@@ -61,7 +62,7 @@ public class BlackHoleComponent implements Component {
 						
 						// If velocity is lower than 1 in each axis, proceed.
 						if (distance > size && entity.getVelocity().lengthSquared() < 3) {
-							entity.addVelocity(Math.min(1F - entity.getVelocity().getX(), pull.getX()), Math.min(1F - entity.getVelocity().getY(), pull.getY()), Math.min(1F - entity.getVelocity().getZ(), pull.getZ()));
+							entity.addVelocity(MathHelper.clamp(pull.getX(), -1F, +1F), MathHelper.clamp(pull.getY(), -1F, +1F), MathHelper.clamp(pull.getZ(), -1F, +1F));
 							entity.velocityModified = true;
 							entity.velocityDirty = true;
 						}
@@ -91,7 +92,7 @@ public class BlackHoleComponent implements Component {
 						
 						// If velocity is lower than 1 in each axis, proceed.
 						if (distance > size && entity.getVelocity().lengthSquared() < 3) {
-							entity.addVelocity(Math.min(1F - entity.getVelocity().getX(), pull.getX()), Math.min(1F - entity.getVelocity().getY(), pull.getY()), Math.min(1F - entity.getVelocity().getZ(), pull.getZ()));
+							entity.addVelocity(MathHelper.clamp(pull.getX(), -1F, +1F), MathHelper.clamp(pull.getY(), -1F, +1F), MathHelper.clamp(pull.getZ(), -1F, +1F));
 							entity.velocityModified = true;
 							entity.velocityDirty = true;
 						}
