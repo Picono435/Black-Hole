@@ -105,7 +105,7 @@ public class BlackHoleCommands {
 			LiteralCommandNode<ServerCommandSource> blackHolePull =
 					CommandManager.literal("pull")
 							.then(
-									CommandManager.argument("pullSpeed", FloatArgumentType.floatArg())
+									CommandManager.argument("pullSpeed", IntegerArgumentType.integer())
 											.executes(BlackHoleCommands::pullSpeed)
 											.build()
 							).build();
@@ -113,7 +113,7 @@ public class BlackHoleCommands {
 			LiteralCommandNode<ServerCommandSource> blackHoleGrow =
 					CommandManager.literal("grow")
 							.then(
-									CommandManager.argument("growSpeed", FloatArgumentType.floatArg())
+									CommandManager.argument("growSpeed", IntegerArgumentType.integer())
 											.executes(BlackHoleCommands::growSpeed)
 											.build()
 							).build();
@@ -121,7 +121,7 @@ public class BlackHoleCommands {
 			LiteralCommandNode<ServerCommandSource> blackHoleFollow =
 					CommandManager.literal("follow")
 							.then(
-									CommandManager.argument("followSpeed", FloatArgumentType.floatArg())
+									CommandManager.argument("followSpeed", IntegerArgumentType.integer())
 											.executes(BlackHoleCommands::followSpeed)
 											.build()
 							).build();

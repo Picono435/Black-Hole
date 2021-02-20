@@ -116,9 +116,7 @@ public class BlackHoleComponent implements Component {
 			tickSize();
 		}
 		
-		if (!world.isClient) {
-			tickDestruction();
-		}
+		tickDestruction();
 		
 		if (world.isClient) {
 			tickPlayerPull();
