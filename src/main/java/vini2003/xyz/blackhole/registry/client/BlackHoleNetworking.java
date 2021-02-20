@@ -4,10 +4,13 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.util.Identifier;
+import net.minecraft.world.World;
 import vini2003.xyz.blackhole.BlackHole;
 import vini2003.xyz.blackhole.common.config.BlackHoleConfig;
+import vini2003.xyz.blackhole.registry.common.BlackHoleComponents;
 
 public class BlackHoleNetworking {
+	public static Identifier KILL_PACKET = BlackHole.identifier("kill");
 	public static Identifier PULL_SPEED_PACKET = BlackHole.identifier("pull_speed");
 	public static Identifier GROW_SPEED_PACKET = BlackHole.identifier("grow_speed");
 	public static Identifier FOLLOW_SPEED_PACKET = BlackHole.identifier("follow_speed");
@@ -38,5 +41,11 @@ public class BlackHoleNetworking {
 				BlackHoleConfig.cache.pull = true;
 				BlackHoleConfig.cache.grow = true;
 			});
+		
+		ClientPlayNetworking.registerGlobalReceiver(KILL_PACKET, (minecraftClient, clientPlayNetworkHandler, packetByteBuf, packetSender) -> {
+			World world = minecraftClient.world;
+			
+			BlackHoleComponents.BLACK_HOLES.get(world).getBlackHoles().clear();
+		});
 	}
 }

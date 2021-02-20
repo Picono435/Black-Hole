@@ -84,7 +84,7 @@ public class BlackHoleUtilities {
 							}
 						} else {
 							// Remove the block.
-							if (world.random.nextInt(5) == 0) {
+							if (world.random.nextInt((int) Math.sqrt(blackHole.getSize())) == 0) {
 								world.setBlockState(topPosition, Blocks.AIR.getDefaultState());
 							}
 						}
