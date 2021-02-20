@@ -119,6 +119,8 @@ public class WorldRendererMixin {
 				itemRenderer.renderItem(particle.getStack(), ModelTransformation.Mode.NONE, 15728880, OverlayTexture.DEFAULT_UV, matrices, bufferBuilders.getEntityVertexConsumers());
 				
 				matrices.pop();
+				
+				bufferBuilders.getEntityVertexConsumers().draw();
 			}
 		});
 	}
