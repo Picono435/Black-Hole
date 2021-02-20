@@ -33,6 +33,15 @@ public class BlackHoleCommands {
 		return 1;
 	}
 	
+	private static int kill(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
+		World world = context.getSource().getWorld();
+		
+		BlackHoleComponents.BLACK_HOLES.get(world).getBlackHoles().clear();
+		BlackHoleComponents.BLACK_HOLES.sync(world);
+		
+		return 1;
+	}
+	
 	private static int growSpeed(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
 		float growSpeed = IntegerArgumentType.getInteger(context, "growSpeed") * BlackHoleConfig.defaultGrow;
 		
@@ -41,7 +50,9 @@ public class BlackHoleCommands {
 		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
 		buf.writeFloat(growSpeed);
 		
-		ServerPlayNetworking.send(context.getSource().getPlayer(), BlackHoleNetworking.GROW_SPEED_PACKET, buf);
+		context.getSource().getMinecraftServer().getPlayerManager().getPlayerList().forEach(player -> {
+			ServerPlayNetworking.send(player, BlackHoleNetworking.GROW_SPEED_PACKET, buf);
+		});
 		
 		return 1;
 	}
@@ -54,7 +65,9 @@ public class BlackHoleCommands {
 		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
 		buf.writeFloat(pullSpeed);
 		
-		ServerPlayNetworking.send(context.getSource().getPlayer(), BlackHoleNetworking.PULL_SPEED_PACKET, buf);
+		context.getSource().getMinecraftServer().getPlayerManager().getPlayerList().forEach(player -> {
+			ServerPlayNetworking.send(player, BlackHoleNetworking.PULL_SPEED_PACKET, buf);
+		});
 		
 		return 1;
 	}
@@ -67,7 +80,9 @@ public class BlackHoleCommands {
 		PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
 		buf.writeFloat(followSpeed);
 		
-		ServerPlayNetworking.send(context.getSource().getPlayer(), BlackHoleNetworking.FOLLOW_SPEED_PACKET, buf);
+		context.getSource().getMinecraftServer().getPlayerManager().getPlayerList().forEach(player -> {
+			ServerPlayNetworking.send(player, BlackHoleNetworking.FOLLOW_SPEED_PACKET, buf);
+		});
 		
 		return 1;
 	}
@@ -77,7 +92,9 @@ public class BlackHoleCommands {
 		BlackHoleConfig.cache.pull = false;
 		BlackHoleConfig.cache.grow = false;
 		
-		ServerPlayNetworking.send(context.getSource().getPlayer(), BlackHoleNetworking.PAUSE_PACKET, new PacketByteBuf(Unpooled.buffer()));
+		context.getSource().getMinecraftServer().getPlayerManager().getPlayerList().forEach(player -> {
+			ServerPlayNetworking.send(player, BlackHoleNetworking.PAUSE_PACKET, new PacketByteBuf(Unpooled.buffer()));
+		});
 		
 		return 1;
 	}
@@ -87,7 +104,9 @@ public class BlackHoleCommands {
 		BlackHoleConfig.cache.pull = true;
 		BlackHoleConfig.cache.grow = true;
 		
-		ServerPlayNetworking.send(context.getSource().getPlayer(), BlackHoleNetworking.RESUME_PACKET, new PacketByteBuf(Unpooled.buffer()));
+		context.getSource().getMinecraftServer().getPlayerManager().getPlayerList().forEach(player -> {
+			ServerPlayNetworking.send(player, BlackHoleNetworking.RESUME_PACKET, new PacketByteBuf(Unpooled.buffer()));
+		});
 		
 		return 1;
 	}
@@ -98,12 +117,19 @@ public class BlackHoleCommands {
 			
 			LiteralCommandNode<ServerCommandSource> blackHoleSpawn =
 					CommandManager.literal("spawn")
-							.executes(BlackHoleCommands::spawnBlackHole)
 							.requires((source) -> source.hasPermissionLevel(2))
+							.executes(BlackHoleCommands::spawnBlackHole)
+							.build();
+			
+			LiteralCommandNode<ServerCommandSource> blackHoleKill =
+					CommandManager.literal("kill")
+							.requires((source) -> source.hasPermissionLevel(2))
+							.executes(BlackHoleCommands::kill)
 							.build();
 			
 			LiteralCommandNode<ServerCommandSource> blackHolePull =
 					CommandManager.literal("pull")
+							.requires((source) -> source.hasPermissionLevel(2))
 							.then(
 									CommandManager.argument("pullSpeed", IntegerArgumentType.integer())
 											.executes(BlackHoleCommands::pullSpeed)
@@ -112,6 +138,7 @@ public class BlackHoleCommands {
 			
 			LiteralCommandNode<ServerCommandSource> blackHoleGrow =
 					CommandManager.literal("grow")
+							.requires((source) -> source.hasPermissionLevel(2))
 							.then(
 									CommandManager.argument("growSpeed", IntegerArgumentType.integer())
 											.executes(BlackHoleCommands::growSpeed)
@@ -120,6 +147,7 @@ public class BlackHoleCommands {
 			
 			LiteralCommandNode<ServerCommandSource> blackHoleFollow =
 					CommandManager.literal("follow")
+							.requires((source) -> source.hasPermissionLevel(2))
 							.then(
 									CommandManager.argument("followSpeed", IntegerArgumentType.integer())
 											.executes(BlackHoleCommands::followSpeed)
@@ -128,16 +156,19 @@ public class BlackHoleCommands {
 			
 			LiteralCommandNode<ServerCommandSource> blackHolePause =
 					CommandManager.literal("pause")
+							.requires((source) -> source.hasPermissionLevel(2))
 							.executes(BlackHoleCommands::pause)
-					.build();
+							.build();
 			
 			LiteralCommandNode<ServerCommandSource> blackHoleResume =
 					CommandManager.literal("resume")
+							.requires((source) -> source.hasPermissionLevel(2))
 							.executes(BlackHoleCommands::resume)
-					.build();
+							.build();
 			
 			
 			blackHoleRoot.addChild(blackHoleSpawn);
+			blackHoleRoot.addChild(blackHoleKill);
 			blackHoleRoot.addChild(blackHolePull);
 			blackHoleRoot.addChild(blackHoleGrow);
 			blackHoleRoot.addChild(blackHoleFollow);

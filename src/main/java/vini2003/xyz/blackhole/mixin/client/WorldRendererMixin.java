@@ -23,6 +23,7 @@ import vini2003.xyz.blackhole.BlackHoleClient;
 import vini2003.xyz.blackhole.client.utilities.BlackHoleClientUtilities;
 import vini2003.xyz.blackhole.common.components.BlackHoleComponent;
 import vini2003.xyz.blackhole.common.components.BlackHoleWorldComponent;
+import vini2003.xyz.blackhole.common.config.BlackHoleConfig;
 import vini2003.xyz.blackhole.registry.common.BlackHoleComponents;
 
 import java.util.Iterator;
@@ -93,35 +94,37 @@ public class WorldRendererMixin {
 			PlayerEntity player = BlackHoleClientUtilities.getPlayer();
 			
 			// Move particles towards black hole.
-			for (Iterator<BlackHoleComponent.BlackHoleParticle> particleIterator = blackHole.getParticles().iterator(); particleIterator.hasNext(); ) {
-				BlackHoleComponent.BlackHoleParticle particle = particleIterator.next();
-				
-				matrices.push();
-				
-				double distanceToBlackHole = particle.getPos().distanceTo(blackHole.getPos());
-				
-				double distanceToPlayer = particle.getPos().distanceTo(player.getPos());
-				
-				if (distanceToBlackHole < size || distanceToPlayer > 256) {
-					particleIterator.remove();
+			if (BlackHoleConfig.cache.pull) {
+				for (Iterator<BlackHoleComponent.BlackHoleParticle> particleIterator = blackHole.getParticles().iterator(); particleIterator.hasNext(); ) {
+					BlackHoleComponent.BlackHoleParticle particle = particleIterator.next();
+					
+					matrices.push();
+					
+					double distanceToBlackHole = particle.getPos().distanceTo(blackHole.getPos());
+					
+					double distanceToPlayer = particle.getPos().distanceTo(player.getPos());
+					
+					if (distanceToBlackHole < size || distanceToPlayer > 256) {
+						particleIterator.remove();
+						
+						matrices.pop();
+						
+						continue;
+					}
+					
+					Vec3d pull = particle.getPos().subtract(blackHole.getPos()).normalize().multiply(tickDelta * 0.5F);
+					
+					particle.setPos(particle.getPos().subtract(pull));
+					
+					matrices.translate(particle.getPos().getX() - camera.getPos().getX(), particle.getPos().getY() - camera.getPos().getY(), particle.getPos().getZ() - camera.getPos().getZ());
+					
+					itemRenderer.renderItem(particle.getStack(), ModelTransformation.Mode.NONE, 15728880, OverlayTexture.DEFAULT_UV, matrices, bufferBuilders.getEntityVertexConsumers());
 					
 					matrices.pop();
-					
-					continue;
 				}
-				
-				Vec3d pull = particle.getPos().subtract(blackHole.getPos()).normalize().multiply(tickDelta * 0.5F);
-				
-				particle.setPos(particle.getPos().subtract(pull));
-				
-				matrices.translate(particle.getPos().getX() - camera.getPos().getX(), particle.getPos().getY() - camera.getPos().getY(), particle.getPos().getZ() - camera.getPos().getZ());
-				
-				itemRenderer.renderItem(particle.getStack(), ModelTransformation.Mode.NONE, 15728880, OverlayTexture.DEFAULT_UV, matrices, bufferBuilders.getEntityVertexConsumers());
-				
-				matrices.pop();
-				
-				bufferBuilders.getEntityVertexConsumers().draw();
 			}
+			
+			bufferBuilders.getEntityVertexConsumers().draw();
 		});
 	}
 }
