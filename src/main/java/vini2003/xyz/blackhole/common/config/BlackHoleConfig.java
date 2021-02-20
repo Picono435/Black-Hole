@@ -39,4 +39,6 @@ public class BlackHoleConfig implements ConfigData {
 	public boolean pull = true;
 	
 	public float pullSpeed = 0.125F;
+	
+	public boolean damage = true;
 }

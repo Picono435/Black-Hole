@@ -11,6 +11,8 @@ import vini2003.xyz.blackhole.registry.client.BlackHoleRenderLayers;
 public class BlackHoleClient implements ClientModInitializer {
 	public static boolean isBlackedOut = false;
 	
+	public static boolean shouldRemoveBlackHoles = false;
+	
 	@Override
 	public void onInitializeClient() {
 		BlackHoleCallbacks.initialize();

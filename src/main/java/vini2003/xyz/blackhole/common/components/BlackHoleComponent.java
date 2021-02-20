@@ -44,7 +44,9 @@ public class BlackHoleComponent implements Component {
 	}
 	
 	public void tickDestruction() {
-		BlackHoleUtilities.destroy(this, world, (int) pos.getX(), (int)  pos.getY(), (int) pos.getZ(), (int) getSize());
+		if (BlackHoleConfig.cache.damage) {
+			BlackHoleUtilities.destroy(this, world, (int) pos.getX(), (int)  pos.getY(), (int) pos.getZ(), (int) getSize());
+		}
 	}
 	
 	public void tickPlayerPull() {

@@ -12,6 +12,7 @@ import net.minecraft.client.world.ClientWorld;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.Matrix4f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -57,75 +58,81 @@ public class WorldRendererMixin {
 		
 		blackHoleWorldComponent.getBlackHoles().forEach(blackHole -> {
 			float size = blackHole.getSize();
-			
+		
 			BakedModel blackhole_model;
-			
+		
 			if (!blackhole_models.containsKey(blackHole.getId())) {
 				blackhole_models.put(blackHole.getId(), Myron.getModel(BlackHole.identifier("models/misc/black_sphere")));
 			}
-			
+		
 			blackhole_model = blackhole_models.getOrDefault(blackHole.getId(), null);
-			
+		
 			if (blackhole_model != null) {
 				matrices.push();
-				
+		
 				matrices.translate(blackHole.getPos().getX() - camera.getPos().getX(), blackHole.getPos().getY() - camera.getPos().getY(), blackHole.getPos().getZ() - camera.getPos().getZ());
-				
+		
 				matrices.scale(size, size, size);
-				
+		
 				// Render the sphere.
 				if (blackhole_model != null) {
 					MatrixStack.Entry matricesEntry = matrices.peek();
-					
+		
 					blackhole_model.getQuads(null, null, world.getRandom()).forEach(quad -> {
 						consumer.quad(matricesEntry, quad, 0.0F, 0.0F, 0.0F, 0x00000000, OverlayTexture.DEFAULT_UV);
 					});
 				}
-				
+		
 				matrices.pop();
 			}
-			
+		
 			// Black out players inside the black hole.
 			if (MinecraftClient.getInstance().player != null && blackHole.getPos().subtract(0, 1.75, 0).distanceTo(MinecraftClient.getInstance().player.getPos()) <= size) {
 				BlackHoleClient.isBlackedOut = true;
 			}
-			
+		
 			ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
-			
+		
 			PlayerEntity player = BlackHoleClientUtilities.getPlayer();
-			
+		
 			// Move particles towards black hole.
 			if (BlackHoleConfig.cache.pull) {
 				for (Iterator<BlackHoleComponent.BlackHoleParticle> particleIterator = blackHole.getParticles().iterator(); particleIterator.hasNext(); ) {
 					BlackHoleComponent.BlackHoleParticle particle = particleIterator.next();
-					
+		
 					matrices.push();
-					
+		
 					double distanceToBlackHole = particle.getPos().distanceTo(blackHole.getPos());
-					
+		
 					double distanceToPlayer = particle.getPos().distanceTo(player.getPos());
-					
+		
 					if (distanceToBlackHole < size || distanceToPlayer > 256) {
 						particleIterator.remove();
-						
+		
 						matrices.pop();
-						
+		
 						continue;
 					}
-					
+		
 					Vec3d pull = particle.getPos().subtract(blackHole.getPos()).normalize().multiply(tickDelta * 0.5F);
-					
+		
 					particle.setPos(particle.getPos().subtract(pull));
-					
+		
 					matrices.translate(particle.getPos().getX() - camera.getPos().getX(), particle.getPos().getY() - camera.getPos().getY(), particle.getPos().getZ() - camera.getPos().getZ());
-					
+		
 					itemRenderer.renderItem(particle.getStack(), ModelTransformation.Mode.NONE, 15728880, OverlayTexture.DEFAULT_UV, matrices, bufferBuilders.getEntityVertexConsumers());
-					
+		
 					matrices.pop();
 				}
 			}
-			
+		
 			bufferBuilders.getEntityVertexConsumers().draw();
 		});
+		
+		if (BlackHoleClient.shouldRemoveBlackHoles) {
+			BlackHoleComponents.BLACK_HOLES.get(world).getBlackHoles().clear();
+			
+			BlackHoleClient.shouldRemoveBlackHoles = false;
+		}
 	}
 }
