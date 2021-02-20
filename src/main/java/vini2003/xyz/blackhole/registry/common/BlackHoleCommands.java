@@ -38,6 +38,10 @@ public class BlackHoleCommands {
 		
 		BlackHoleComponents.BLACK_HOLES.get(world).getBlackHoles().clear();
 		BlackHoleComponents.BLACK_HOLES.sync(world);
+
+		context.getSource().getMinecraftServer().getPlayerManager().getPlayerList().forEach(player -> {
+			ServerPlayNetworking.send(player, BlackHoleNetworking.KILL_PACKET, new PacketByteBuf(Unpooled.buffer()));
+		});
 		
 		return 1;
 	}

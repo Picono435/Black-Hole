@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import vini2003.xyz.blackhole.registry.client.BlackHoleCallbacks;
 import vini2003.xyz.blackhole.registry.client.BlackHoleNetworking;
+import vini2003.xyz.blackhole.registry.client.BlackHoleRenderLayers;
 
 @Environment(EnvType.CLIENT)
 public class BlackHoleClient implements ClientModInitializer {
@@ -14,5 +15,6 @@ public class BlackHoleClient implements ClientModInitializer {
 	public void onInitializeClient() {
 		BlackHoleCallbacks.initialize();
 		BlackHoleNetworking.initialize();
+		BlackHoleRenderLayers.initialize();
 	}
 }

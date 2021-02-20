@@ -24,6 +24,7 @@ import vini2003.xyz.blackhole.client.utilities.BlackHoleClientUtilities;
 import vini2003.xyz.blackhole.common.components.BlackHoleComponent;
 import vini2003.xyz.blackhole.common.components.BlackHoleWorldComponent;
 import vini2003.xyz.blackhole.common.config.BlackHoleConfig;
+import vini2003.xyz.blackhole.registry.client.BlackHoleRenderLayers;
 import vini2003.xyz.blackhole.registry.common.BlackHoleComponents;
 
 import java.util.Iterator;
@@ -52,7 +53,7 @@ public class WorldRendererMixin {
 		
 		BlackHoleWorldComponent blackHoleWorldComponent = BlackHoleComponents.BLACK_HOLES.get(world);
 		
-		VertexConsumer consumer = bufferBuilders.getEntityVertexConsumers().getBuffer(RenderLayer.getSolid());
+		VertexConsumer consumer = bufferBuilders.getEntityVertexConsumers().getBuffer(BlackHoleRenderLayers.BLACK_SPHERE);
 		
 		blackHoleWorldComponent.getBlackHoles().forEach(blackHole -> {
 			float size = blackHole.getSize();
