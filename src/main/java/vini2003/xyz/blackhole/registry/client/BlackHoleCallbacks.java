@@ -10,7 +10,11 @@ import vini2003.xyz.blackhole.registry.common.BlackHoleComponents;
 
 public class BlackHoleCallbacks {
 	public static void initialize() {
-		ClientTickEvents.END_CLIENT_TICK.register(server -> {
+		ClientTickEvents.START_CLIENT_TICK.register(client -> {
+			BlackHoleClient.isBlackedOut = false;
+		});
+		
+		ClientTickEvents.END_CLIENT_TICK.register(client -> {
 			if (MinecraftClient.getInstance().world != null) {
 				BlackHoleWorldComponent blackHoleWorldComponent = BlackHoleComponents.BLACK_HOLES.get(MinecraftClient.getInstance().world);
 				
