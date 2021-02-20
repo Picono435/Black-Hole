@@ -34,7 +34,7 @@ public class BlackHoleComponent implements Component {
 	
 	public void tickSize() {
 		if (BlackHoleConfig.cache.grow) {
-			size = Math.min(BlackHoleConfig.cache.limit, size * BlackHoleConfig.cache.growSpeed);
+			size = Math.min(BlackHoleConfig.cache.limit, size * (1 + BlackHoleConfig.cache.growSpeed));
 		}
 	}
 	

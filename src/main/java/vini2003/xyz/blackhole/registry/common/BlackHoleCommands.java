@@ -28,6 +28,7 @@ public class BlackHoleCommands {
 		blackHole.setSize(1F);
 		
 		BlackHoleComponents.BLACK_HOLES.get(world).getBlackHoles().add(blackHole);
+		BlackHoleComponents.BLACK_HOLES.sync(world);
 		
 		return 1;
 	}

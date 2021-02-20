@@ -49,7 +49,7 @@ public class WorldRendererMixin {
 		blackHoleWorldComponent.getBlackHoles().forEach(blackHole -> {
 			matrices.push();
 			
-			matrices.translate(blackHole.getPos().getX(), blackHole.getPos().getY(), blackHole.getPos().getZ());
+			matrices.translate(blackHole.getPos().getX() - camera.getPos().getX(), blackHole.getPos().getY() - camera.getPos().getY(), blackHole.getPos().getZ() - camera.getPos().getZ());
 			
 			float size = blackHole.getSize();
 			
@@ -97,7 +97,7 @@ public class WorldRendererMixin {
 				
 				particle.setPos(particle.getPos().subtract(pull));
 				
-				matrices.translate(particle.getPos().getX(), particle.getPos().getY(), particle.getPos().getZ());
+				matrices.translate(particle.getPos().getX() - camera.getPos().getX(), particle.getPos().getY() - camera.getPos().getY(), particle.getPos().getZ() - camera.getPos().getZ());
 				
 				itemRenderer.renderItem(particle.getStack(), ModelTransformation.Mode.NONE, world.getLightLevel(new BlockPos(particle.getPos().getX(), particle.getPos().getY(), particle.getPos().getZ())), OverlayTexture.DEFAULT_UV, matrices, bufferBuilders.getEntityVertexConsumers());
 				
