@@ -23,7 +23,7 @@
       "vini2003.xyz.blackhole.client.modmenu.BlackHoleModMenu"
     ],
     "cardinal-components": [
-      "vini2003.xyz.blackhole.common.BlackHoleComponents"
+      "vini2003.xyz.blackhole.registry.common.BlackHoleComponents"
     ]
   },
   "mixins": [

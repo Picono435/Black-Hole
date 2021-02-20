@@ -69,8 +69,6 @@ public class BlackHoleComponent implements Component {
 	public void tickEntityPull() {
 		if (!world.isClient) {
 			for (Entity entity : ((ServerWorld) world).iterateEntities()) {
-				if (entity.getType() == BlackHoleEntityTypes.BLACK_HOLE) continue;
-				
 				double distance = getPos().distanceTo(entity.getPos());
 				
 				if (BlackHoleConfig.cache.pull) {
