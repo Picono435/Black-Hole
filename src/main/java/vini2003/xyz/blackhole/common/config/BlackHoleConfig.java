@@ -34,9 +34,9 @@ public class BlackHoleConfig implements ConfigData {
 	public float growSpeed = 0.00003851F;
 	
 	@ConfigEntry.Gui.Excluded
-	public static final float defaultPull = 0.5F;
+	public static final float defaultPull = 0.125F;
 	
 	public boolean pull = true;
 	
-	public float pullSpeed = 0.5F;
+	public float pullSpeed = 0.125F;
 }

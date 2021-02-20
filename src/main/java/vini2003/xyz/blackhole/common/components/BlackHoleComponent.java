@@ -21,7 +21,7 @@ public class BlackHoleComponent implements Component {
 	
 	private float size = 1F;
 	
-	private int countdownToDamage = 1200;
+	private int countdown = 1200;
 	
 	private int id;
 	
@@ -54,7 +54,7 @@ public class BlackHoleComponent implements Component {
 				
 				if (world.isClient) {
 					Vec3d pull = getPos().subtract(entity.getPos()).normalize();
-					pull = pull.multiply(BlackHoleConfig.cache.pullSpeed / (distance - size));
+					pull = pull.multiply(Math.pow(BlackHoleConfig.cache.pullSpeed, (distance * 1.5F) / (size * 2.5F)));
 					
 					// If velocity is lower than 1 in each axis, proceed.
 					if (distance > size && entity.getVelocity().lengthSquared() < 3) {
@@ -67,7 +67,7 @@ public class BlackHoleComponent implements Component {
 						entity.setVelocity(Vec3d.ZERO);
 					}
 				} else {
-					if (countdownToDamage <= 0 && distance < size) {
+					if (countdown <= 0 && distance < size) {
 						entity.kill();
 					}
 				}
@@ -83,7 +83,7 @@ public class BlackHoleComponent implements Component {
 				if (BlackHoleConfig.cache.pull) {
 					if (!(entity instanceof PlayerEntity)) {
 						Vec3d pull = getPos().subtract(entity.getPos()).normalize();
-						pull = pull.multiply(BlackHoleConfig.cache.pullSpeed / (distance - size));
+						pull = pull.multiply(Math.pow(BlackHoleConfig.cache.pullSpeed, (distance * 1.5F) / (size * 2.5F)));
 						
 						// If velocity is lower than 1 in each axis, proceed.
 						if (distance > size && entity.getVelocity().lengthSquared() < 3) {
@@ -92,7 +92,7 @@ public class BlackHoleComponent implements Component {
 							entity.velocityDirty = true;
 						}
 						
-						if (countdownToDamage <= 0 && distance < size) {
+						if (countdown <= 0 && distance < size) {
 							entity.kill();
 							entity.setVelocity(Vec3d.ZERO);
 						}
@@ -116,30 +116,32 @@ public class BlackHoleComponent implements Component {
 	}
 	
 	public void tickCountdown() {
-		if (countdownToDamage > 0) {
-			--countdownToDamage;
+		if (countdown > 0) {
+			--countdown;
 		}
 	}
 	
 	public void tick() {
-		if (!world.isClient) {
-			tickSize();
-		}
-		
-		tickDestruction();
-		
-		tickPlayerPull();
-		
-		if (!world.isClient) {
-			tickEntityPull();
-		}
-		
-		if (!world.isClient) {
-			tickTarget();
-		}
-		
-		if (!world.isClient) {
-			tickCountdown();
+		if (countdown <= 0) {
+			if (!world.isClient) {
+				tickSize();
+			}
+			
+			tickDestruction();
+			
+			tickPlayerPull();
+			
+			if (!world.isClient) {
+				tickEntityPull();
+			}
+			
+			if (!world.isClient) {
+				tickTarget();
+			}
+		} else {
+			if (!world.isClient) {
+				tickCountdown();
+			}
 		}
 	}
 	
@@ -223,7 +225,7 @@ public class BlackHoleComponent implements Component {
 		
 		size = compoundTag.getFloat("Size");
 		
-		countdownToDamage = compoundTag.getInt("CountdownToDamage");
+		countdown = compoundTag.getInt("Countdown");
 		
 		id = compoundTag.getInt("Id");
 	}
@@ -236,7 +238,7 @@ public class BlackHoleComponent implements Component {
 		
 		compoundTag.putFloat("Size", size);
 		
-		compoundTag.putInt("CountdownToDamage", countdownToDamage);
+		compoundTag.putInt("Countdown", countdown);
 		
 		compoundTag.putInt("Id", id);
 	}

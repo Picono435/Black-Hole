@@ -47,7 +47,7 @@ public class BlackHoleCommands {
 	}
 	
 	private static int pullSpeed(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		float pullSpeed = IntegerArgumentType.getInteger(context, "pullSpeed") * BlackHoleConfig.defaultGrow;
+		float pullSpeed = IntegerArgumentType.getInteger(context, "pullSpeed") * BlackHoleConfig.defaultPull;
 		
 		BlackHoleConfig.cache.pullSpeed = pullSpeed;
 		
@@ -60,7 +60,7 @@ public class BlackHoleCommands {
 	}
 	
 	private static int followSpeed(CommandContext<ServerCommandSource> context) throws CommandSyntaxException {
-		float followSpeed = IntegerArgumentType.getInteger(context, "followSpeed") * BlackHoleConfig.defaultGrow;
+		float followSpeed = IntegerArgumentType.getInteger(context, "followSpeed") * BlackHoleConfig.defaultFollow;
 		
 		BlackHoleConfig.cache.followSpeed = followSpeed;
 		

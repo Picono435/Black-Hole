@@ -79,7 +79,7 @@ public class BlackHoleUtilities {
 							
 							// The player is within distance.
 							// Add the removed block to the entity.
-							if (((List) blackHole.getParticles()).size() < 2048 && isWithinDistance(topPosition.getX(), (int) player.getX(), topPosition.getZ(), (int) player.getZ(), 64)) {
+							if (world.random.nextInt(5) == 0 && blackHole.getParticles().size() < 512 && isWithinDistance(topPosition.getX(), (int) player.getX(), topPosition.getZ(), (int) player.getZ(), 256)) {
 								blackHole.getParticles().add(new BlackHoleComponent.BlackHoleParticle(new Vec3d(topPosition.getX(), topPosition.getY(), topPosition.getZ()), state));
 							}
 						} else {

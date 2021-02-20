@@ -1,6 +1,7 @@
 package vini2003.xyz.blackhole.mixin.client;
 
 import dev.monarkhes.myron.api.Myron;
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.item.ItemRenderer;
@@ -25,6 +26,7 @@ import vini2003.xyz.blackhole.common.components.BlackHoleWorldComponent;
 import vini2003.xyz.blackhole.registry.common.BlackHoleComponents;
 
 import java.util.Iterator;
+import java.util.Map;
 
 @Mixin(WorldRenderer.class)
 public class WorldRendererMixin {
@@ -32,21 +34,18 @@ public class WorldRendererMixin {
 	
 	@Shadow @Final private BufferBuilderStorage bufferBuilders;
 	
-	private BakedModel blackhole_model;
 	
 	private long lastFrameNanoTime = -1;
 	
+	private Int2ObjectArrayMap<BakedModel> blackhole_models = new Int2ObjectArrayMap<>();
+	
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/render/BufferBuilderStorage;getEntityVertexConsumers()Lnet/minecraft/client/render/VertexConsumerProvider$Immediate;"), method = "render")
 	void blackhole_render(MatrixStack matrices, float uselessTickDelta, long limitTime, boolean renderBlockOutline, Camera camera, GameRenderer gameRenderer, LightmapTextureManager lightmapTextureManager, Matrix4f matrix4f, CallbackInfo ci) {
-		if (blackhole_model == null) {
-			blackhole_model = Myron.getModel(BlackHole.identifier("models/misc/black_sphere"));
-		}
-		
 		if (lastFrameNanoTime == -1) {
 			lastFrameNanoTime = System.nanoTime();
 		}
 		
-		float tickDelta = (System.nanoTime() - lastFrameNanoTime) / 16_000_000F;
+		float tickDelta = Math.min(0.375F, (System.nanoTime() - lastFrameNanoTime) / 4_000_0000F);
 		
 		lastFrameNanoTime = System.nanoTime();
 		
@@ -55,24 +54,34 @@ public class WorldRendererMixin {
 		VertexConsumer consumer = bufferBuilders.getEntityVertexConsumers().getBuffer(RenderLayer.getSolid());
 		
 		blackHoleWorldComponent.getBlackHoles().forEach(blackHole -> {
-			matrices.push();
-			
-			matrices.translate(blackHole.getPos().getX() - camera.getPos().getX(), blackHole.getPos().getY() - camera.getPos().getY(), blackHole.getPos().getZ() - camera.getPos().getZ());
-			
 			float size = blackHole.getSize();
 			
-			matrices.scale(size, size, size);
+			BakedModel blackhole_model;
 			
-			// Render the sphere.
-			if (blackhole_model != null) {
-				MatrixStack.Entry matricesEntry = matrices.peek();
-				
-				blackhole_model.getQuads(null, null, world.getRandom()).forEach(quad -> {
-					consumer.quad(matricesEntry, quad, 0.0F, 0.0F, 0.0F, 0x00000000, OverlayTexture.DEFAULT_UV);
-				});
+			if (!blackhole_models.containsKey(blackHole.getId())) {
+				blackhole_models.put(blackHole.getId(), Myron.getModel(BlackHole.identifier("models/misc/black_sphere")));
 			}
 			
-			matrices.pop();
+			blackhole_model = blackhole_models.getOrDefault(blackHole.getId(), null);
+			
+			if (blackhole_model != null) {
+				matrices.push();
+				
+				matrices.translate(blackHole.getPos().getX() - camera.getPos().getX(), blackHole.getPos().getY() - camera.getPos().getY(), blackHole.getPos().getZ() - camera.getPos().getZ());
+				
+				matrices.scale(size, size, size);
+				
+				// Render the sphere.
+				if (blackhole_model != null) {
+					MatrixStack.Entry matricesEntry = matrices.peek();
+					
+					blackhole_model.getQuads(null, null, world.getRandom()).forEach(quad -> {
+						consumer.quad(matricesEntry, quad, 0.0F, 0.0F, 0.0F, 0x00000000, OverlayTexture.DEFAULT_UV);
+					});
+				}
+				
+				matrices.pop();
+			}
 			
 			// Black out players inside the black hole.
 			if (MinecraftClient.getInstance().player != null && blackHole.getPos().subtract(0, 1.75, 0).distanceTo(MinecraftClient.getInstance().player.getPos()) <= size) {
@@ -93,7 +102,7 @@ public class WorldRendererMixin {
 				
 				double distanceToPlayer = particle.getPos().distanceTo(player.getPos());
 				
-				if (distanceToBlackHole < size || distanceToPlayer > 128) {
+				if (distanceToBlackHole < size || distanceToPlayer > 256) {
 					particleIterator.remove();
 					
 					matrices.pop();
@@ -101,7 +110,7 @@ public class WorldRendererMixin {
 					continue;
 				}
 				
-				Vec3d pull = particle.getPos().subtract(blackHole.getPos()).normalize().multiply(tickDelta * 0.125F + Math.min(8, (distanceToBlackHole - size)) * 0.025F);
+				Vec3d pull = particle.getPos().subtract(blackHole.getPos()).normalize().multiply(tickDelta * 0.5F);
 				
 				particle.setPos(particle.getPos().subtract(pull));
 				
