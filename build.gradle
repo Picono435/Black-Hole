@@ -42,6 +42,7 @@ dependencies {
 
     // Myron
     modImplementation "dev.monarkhes:myron:${project.myron_version}"
+    include "dev.monarkhes:myron:${project.myron_version}"
 
     // Mod Menu
     modImplementation "io.github.prospector:modmenu:${project.mod_menu_version}"
