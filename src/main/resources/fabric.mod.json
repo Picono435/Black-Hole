@@ -5,10 +5,11 @@
   "name": "Black Hole",
   "description": "A mod adding black holes to the world of Minecraft.",
   "authors": [
-    "vini2003",
-    "Draylar"
+    "vini2003"
   ],
-  "contact": {},
+  "contact": {
+    "email": "contact@vini2003.xyz"
+  },
   "license": "MIT",
   "icon": "assets/blackhole/icon.png",
   "environment": "*",
